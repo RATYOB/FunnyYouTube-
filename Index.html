@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiggleGrid | Curated Funny YouTube Channels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f0f12;
+      --bg-surface: #1a1a24;
+      --bg-card: #232332;
+      --accent-color: #ff3b5c;
+      --accent-hover: #ff1f44;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #2e2e42;
+      --radius: 12px;
+      --transition: all 0.25s ease-in-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background-color: rgba(26, 26, 36, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent-color);
+    }
+
+    .search-bar {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 0.6rem 1rem 0.6rem 2.5rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-bar input:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(255, 59, 92, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Channel Filter Tabs */
+    .channel-tabs {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+      padding-bottom: 0.8rem;
+      margin-bottom: 1.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-color) transparent;
+    }
+
+    .tab-btn {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.5rem 1.2rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      border-color: var(--text-muted);
+    }
+
+    .tab-btn.active {
+      background-color: var(--accent-color);
+      color: #fff;
+      border-color: var(--accent-color);
+    }
+
+    /* Theater Player Section */
+    .theater-container {
+      margin-bottom: 2rem;
+      display: none;
+      background-color: var(--bg-surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .theater-container.active {
+      display: block;
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      background-color: #000;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .player-details {
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .player-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .player-channel {
+      color: var(--accent-color);
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .verified-badge {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      background-color: var(--accent-color);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 9px;
+      text-align: center;
+      line-height: 14px;
+    }
+
+    /* Video Grid */
+    .grid-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Video Card */
+    .card {
+      background-color: var(--bg-surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-color);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .thumbnail-box {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 */
+      background-color: var(--bg-card);
+      overflow: hidden;
+    }
+
+    .thumbnail-box img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .card:hover .thumbnail-box img {
+      transform: scale(1.05);
+    }
+
+    .duration-tag {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .card-info {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--text-main);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 0.6rem;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .card-channel {
+      font-weight: 500;
+      color: var(--accent-color);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 1rem;
+      grid-column: 1 / -1;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-bar {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header>
+    <a href="#" class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+      </svg>
+      Giggle<span>Grid</span>
+    </a>
+    <div class="search-bar">
+      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search funny videos or channels...">
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="container">
+    <!-- Channel Filter Tabs -->
+    <div class="channel-tabs" id="channelTabs">
+      <button class="tab-btn active" data-channel="all">🔥 All Channels</button>
+      <button class="tab-btn" data-channel="RatSlayerS4S">🐀 RatSlayerS4S</button>
+      <button class="tab-btn" data-channel="Daily Dose of Internet">🌐 Daily Dose of Internet</button>
+      <button class="tab-btn" data-channel="Key & Peele">🎭 Key & Peele</button>
+      <button class="tab-btn" data-channel="FailArmy">💥 FailArmy</button>
+      <button class="tab-btn" data-channel="Bad Lip Reading">🎙️ Bad Lip Reading</button>
+    </div>
+
+    <!-- Active Video Theater Player -->
+    <section class="theater-container" id="theaterContainer">
+      <div class="video-wrapper">
+        <iframe id="videoPlayer" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="player-details">
+        <div>
+          <h2 class="player-title" id="playerTitle">Select a video to play</h2>
+          <div class="player-channel">
+            <span id="playerChannel">Channel</span>
+            <span class="verified-badge">✓</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Grid Header & Feed -->
+    <div class="grid-title">
+      <span id="gridHeading">Featured Funny Videos</span>
+      <span id="videoCount" style="font-size: 0.85rem; color: var(--text-muted);">0 Videos</span>
+    </div>
+
+    <section class="video-grid" id="videoGrid">
+      <!-- Dynamic Card Loading -->
+    </section>
+  </main>
+
+  <footer>
+    <p>GiggleGrid — High Quality Funny Video Aggregator. Embedded via Official YouTube Embed API.</p>
+  </footer>
+
+  <script>
+    // Curated Video Database featuring RatSlayerS4S and top comedy channels
+    const videoDatabase = [
+      {
+        id: "xDRtd-pyIgg",
+        title: "RAT WARS • 113 KILLS • THERMAL SNIPER vs RAT INFESTATION",
+        channel: "RatSlayerS4S",
+        duration: "14:22",
+        views: "1.2M",
+        time: "1 month ago"
+      },
+      {
+        id: "nf3PeX81Ynk",
+        title: "RAT SNIPER - You Won't Believe How Fast These Rats Fall",
+        channel: "RatSlayerS4S",
+        duration: "11:05",
+        views: "850K",
+        time: "3 months ago"
+      },
+      {
+        id: "E8WHhl1OIsI",
+        title: "This Game Turned Us Into Actual Rats (Hilarious VR Gameplay)",
+        channel: "RatSlayerS4S",
+        duration: "18:40",
+        views: "540K",
+        time: "5 months ago"
+      },
+      {
+        id: "NvR9YOpIp_A",
+        title: "The Most Satisfying Animal Clips",
+        channel: "Daily Dose of Internet",
+        duration: "03:12",
+        views: "4.5M",
+        time: "2 days ago"
+      },
+      {
+        id: "gEJHrmliVQw",
+        title: "Substitute Teacher - Key & Peele",
+        channel: "Key & Peele",
+        duration: "03:15",
+        views: "220M",
+        time: "9 years ago"
+      },
+      {
+        id: "d334K83-580",
+        title: "Fails of the Month - Ultimate Laugh Challenge",
+        channel: "FailArmy",
+        duration: "10:45",
+        views: "2.1M",
+        time: "1 week ago"
+      },
+      {
+        id: "iu2pSvhYI24",
+        title: "NFL 2023 - A Bad Lip Reading",
+        channel: "Bad Lip Reading",
+        duration: "05:40",
+        views: "12M",
+        time: "1 year ago"
+      },
+      {
+        id: "0Bmhjf0rKe8",
+        title: "Gremlin Rat Extermination Missions Compilation",
+        channel: "RatSlayerS4S",
+        duration: "22:15",
+        views: "310K",
+        time: "6 months ago"
+      }
+    ];
+
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    // DOM Elements
+    const videoGrid = document.getElementById('videoGrid');
+    const theaterContainer = document.getElementById('theaterContainer');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const playerTitle = document.getElementById('playerTitle');
+    const playerChannel = document.getElementById('playerChannel');
+    const channelTabs = document.getElementById('channelTabs');
+    const searchInput = document.getElementById('searchInput');
+    const videoCount = document.getElementById('videoCount');
+    const gridHeading = document.getElementById('gridHeading');
+
+    // Render Videos
+    function renderGrid() {
+      videoGrid.innerHTML = '';
+
+      const filteredVideos = videoDatabase.filter(video => {
+        const matchesChannel = currentFilter === 'all' || video.channel === currentFilter;
+        const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              video.channel.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesChannel && matchesSearch;
+      });
+
+      videoCount.textContent = `${filteredVideos.length} Video${filteredVideos.length === 1 ? '' : 's'}`;
+
+      if (filteredVideos.length === 0) {
+        videoGrid.innerHTML = `
+          <div class="empty-state">
+            <h3>No funny videos found</h3>
+            <p>Try clearing your search or picking another channel filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filteredVideos.forEach(video => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => playVideo(video);
+
+        // High quality YouTube thumbnail standard URL
+        const thumbUrl = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
+
+        card.innerHTML = `
+          <div class="thumbnail-box">
+            <img src="${thumbUrl}" alt="${video.title}" loading="lazy">
+            <span class="duration-tag">${video.duration}</span>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">${video.title}</h3>
+            <div class="card-meta">
+              <span class="card-channel">${video.channel}</span>
+              <span>${video.views} views</span>
+            </div>
+          </div>
+        `;
+        videoGrid.appendChild(card);
+      });
+    }
+
+    // Play Selected Video
+    function playVideo(video) {
+      theaterContainer.classList.add('active');
+      videoPlayer.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&enablejsapi=1`;
+      playerTitle.textContent = video.title;
+      playerChannel.textContent = video.channel;
+      
+      // Smooth scroll to top of theater
+      theaterContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Filter Handlers
+    channelTabs.addEventListener('click', (e) => {
+      if (e.target.classList.contains('tab-btn')) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        currentFilter = e.target.getAttribute('data-channel');
+        gridHeading.textContent = currentFilter === 'all' ? 'Featured Funny Videos' : `${currentFilter} Channel Feed`;
+        renderGrid();
+      }
+    });
+
+    // Search Handler
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      renderGrid();
+    });
+
+    // Initial Load
+    renderGrid();
+  </script>
+</body>
+</html>
