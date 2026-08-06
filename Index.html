@@ -3,265 +3,634 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Historical Archives</title>
+    <title>AdVerse — Infinite Ads</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f4f1ea;
-            --paper-color: #ffffff;
-            --primary-color: #5c4033;
-            --text-color: #2b2b2b;
-            --border-color: #d3c5b3;
-            --accent-color: #8b0000;
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface-2: #1a1a25;
+            --text: #e8e8f0;
+            --text-dim: #8888a0;
+            --accent: #ff3366;
+            --accent-2: #00d4aa;
+            --accent-3: #ffaa00;
+            --border: #2a2a3a;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        /* Animated background grid */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
         }
 
+        .bg-grid::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(255,51,102,0.08) 0%, transparent 60%);
+            animation: pulse-glow 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Header */
         header {
-            text-align: center;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 5px;
-            letter-spacing: 1px;
-        }
-
-        .subtitle {
-            font-style: italic;
-            color: #666;
-            margin-top: 0;
-        }
-
-        .status-bar {
-            background-color: #e9e4d9;
-            border: 1px solid var(--border-color);
-            padding: 10px 15px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            margin-bottom: 25px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(10,10,15,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .badge {
-            background-color: #2e7d32;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 0.8em;
-            font-family: monospace;
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .card {
-            background: var(--paper-color);
-            border: 1px solid var(--border-color);
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-radius: 2px;
+        .logo span { font-weight: 300; opacity: 0.6; }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
         }
 
-        .card h2 {
-            margin-top: 0;
-            color: var(--primary-color);
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        .encrypted-raw {
-            font-family: monospace;
-            background: #222;
-            color: #00ff66;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 0.85em;
-            word-break: break-all;
-            display: none;
-            margin-top: 10px;
-        }
-
-        form label {
+        .stat { text-align: center; }
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
             display: block;
-            font-weight: bold;
-            margin-top: 15px;
-            color: var(--primary-color);
         }
 
-        form input[type="text"], form textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-family: inherit;
-            margin-top: 5px;
+        /* Main content */
+        main {
+            position: relative;
+            z-index: 1;
+            padding-top: 100px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
         }
 
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin-top: 15px;
+        /* Hero section */
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem 3rem;
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        .scroll-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        /* Ad grid */
+        .ad-feed {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding-bottom: 4rem;
+        }
+
+        .ad-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            font-size: 1em;
-            font-family: inherit;
-            border-radius: 4px;
-            transition: background 0.2s;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
         }
 
-        button:hover {
-            background-color: #3b281f;
+        .ad-card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .toggle-btn {
-            background: transparent;
-            color: var(--accent-color);
-            border: 1px solid var(--accent-color);
-            padding: 5px 10px;
-            font-size: 0.8em;
-            margin-top: 10px;
+        .ad-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 20px 60px rgba(255,51,102,0.15), 0 0 0 1px rgba(255,51,102,0.3);
         }
 
-        .toggle-btn:hover {
-            background: var(--accent-color);
+        .ad-label {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255,51,102,0.9);
             color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 4px 10px;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        .ad-image {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .ad-card:hover .ad-image {
+            transform: scale(1.08);
+        }
+
+        .ad-content {
+            padding: 1.25rem;
+        }
+
+        .ad-brand {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-2);
+            margin-bottom: 0.5rem;
+        }
+
+        .ad-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 0.5rem;
+        }
+
+        .ad-desc {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .ad-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), #ff5588);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .ad-cta:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 20px rgba(255,51,102,0.4);
+        }
+
+        /* Wide banner ad */
+        .ad-banner {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 280px;
+        }
+
+        .ad-banner .ad-image { aspect-ratio: auto; height: 100%; }
+        .ad-banner .ad-content { display: flex; flex-direction: column; justify-content: center; }
+
+        @media (max-width: 768px) {
+            .ad-banner { grid-template-columns: 1fr; }
+            .ad-banner .ad-image { aspect-ratio: 16/9; height: auto; }
+            .stats { display: none; }
+            main { padding-left: 1rem; padding-right: 1rem; }
+        }
+
+        /* Square ad */
+        .ad-square {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ad-square .ad-image { aspect-ratio: 1; flex: 1; }
+
+        /* Skyscraper style */
+        .ad-sky {
+            grid-row: span 2;
+        }
+
+        .ad-sky .ad-image { aspect-ratio: 3/4; height: 100%; }
+
+        /* Loading spinner */
+        .loader {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            gap: 0.5rem;
+        }
+
+        .loader-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: loader-bounce 1.4s ease-in-out infinite both;
+        }
+
+        .loader-dot:nth-child(1) { animation-delay: -0.32s; background: var(--accent); }
+        .loader-dot:nth-child(2) { animation-delay: -0.16s; background: var(--accent-2); }
+        .loader-dot:nth-child(3) { animation-delay: 0s; background: var(--accent-3); }
+
+        @keyframes loader-bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        /* Click ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: scale(0);
+            animation: ripple-anim 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-anim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* Sticky bottom ad */
+        .sticky-ad {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            z-index: 99;
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+        }
+
+        .sticky-ad.show { transform: translateY(0); }
+
+        .sticky-ad-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--surface-2);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .sticky-ad img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .sticky-ad-text { flex: 1; }
+        .sticky-ad-text h4 { font-size: 0.9rem; margin-bottom: 2px; }
+        .sticky-ad-text p { font-size: 0.75rem; color: var(--text-dim); }
+
+        .close-sticky {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.3;
+            z-index: 0;
+            animation: float-particle linear infinite;
+        }
+
+        @keyframes float-particle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
+    <div class="bg-grid"></div>
 
-<div class="container">
     <header>
-        <h1>The Historical Archives</h1>
-        <p class="subtitle">Encrypted Repository & Admin Gateway</p>
+        <div class="logo">Ad<span>Verse</span></div>
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-value" id="ad-count">0</span>
+                <span>Ads Served</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="scroll-depth">0m</span>
+                <span>Scrolled</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="time-spent">0s</span>
+                <span>Time Wasted</span>
+            </div>
+        </div>
     </header>
 
-    <!-- IP Status Bar -->
-    <div class="status-bar">
-        <div>
-            <strong>Your IP:</strong> <span id="user-ip">192.168.1.100</span>
+    <main>
+        <section class="hero">
+            <h1>Infinite Ads.<br>Zero Escape.</h1>
+            <p>The world's first ad-only browsing experience. Scroll forever. Click nothing. Consume everything.</p>
+            <div class="scroll-hint">
+                <span>↓</span> Keep scrolling for more ads <span>↓</span>
+            </div>
+        </section>
+
+        <div class="ad-feed" id="ad-feed">
+            <!-- Ads injected here -->
         </div>
-        <div>
-            <strong>Upload Access:</strong> <span class="badge" id="access-badge">AUTHORIZED</span>
+
+        <div class="loader" id="loader">
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
         </div>
-    </div>
+    </main>
 
-    <!-- Restricted Upload Section -->
-    <div class="card" id="upload-card">
-        <h2>Add Historical Entry (Whitelisted IP Only)</h2>
-        <form id="history-form">
-            <label for="title">Historical Era / Event Title:</label>
-            <input type="text" id="title" placeholder="e.g., The Library of Alexandria" required>
-
-            <label for="content">Historical Records / Content:</label>
-            <textarea id="content" rows="4" placeholder="Enter historical details here..." required></textarea>
-
-            <button type="submit">Encrypt & Store Entry</button>
-        </form>
-    </div>
-
-    <!-- Public Archives Display Section -->
-    <h2 style="color: var(--primary-color); margin-top: 40px;">Archived Records</h2>
-    <div id="archives-container">
-        <!-- Sample Initial Record -->
-        <div class="card">
-            <h2>The Rosetta Stone (196 BC)</h2>
-            <p class="decrypted-text">Discovered in 1799, the Rosetta Stone provided the key to deciphering ancient Egyptian hieroglyphs, carrying a decree issued at Memphis in three distinct scripts.</p>
-            <button class="toggle-btn" onclick="toggleView(this)">Show Encrypted Raw Data</button>
-            <div class="encrypted-raw">Encrypted Blob: [U2FsdGVkX1+9Z1A...xK8L9P2qW4z0M==]</div>
+    <div class="sticky-ad" id="sticky-ad">
+        <div class="sticky-ad-content">
+            <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=120&fit=crop" alt="Ad">
+            <div class="sticky-ad-text">
+                <h4>Limited Time: 99% Off Nothing</h4>
+                <p>Buy now before we change our mind. Free shipping on imaginary items.</p>
+            </div>
+            <a href="#" class="ad-cta" onclick="event.preventDefault()">Claim →</a>
+            <button class="close-sticky" onclick="document.getElementById('sticky-ad').classList.remove('show')">×</button>
         </div>
     </div>
-</div>
 
-<script>
-    // Simulated Security Settings
-    const ALLOWED_IP = "192.168.1.100"; // Change this to test access denial
-    const CURRENT_IP = "192.168.1.100"; 
+    <footer>
+        <p>© 2026 AdVerse. All ads are fake. No products were harmed in the making of this website.</p>
+        <p style="margin-top:0.5rem; font-size:0.75rem;">Built for GitHub Pages · No backend required</p>
+    </footer>
 
-    // Simple Base64 + Shift Encryption Simulation for Demo
-    function pseudoEncrypt(text) {
-        return "ENC_" + btoa(text.split('').reverse().join(''));
-    }
+    <script>
+        // Ad data generator
+        const brands = ['NexGen', 'OmniCorp', 'StellarBuy', 'VoidMart', 'HyperLoop', 'NeoBank', 'CloudNine', 'DataPulse', 'QuantumX', 'EchoLabs'];
+        const products = [
+            'AI Toothbrush That Judges You', 'Smart Water Bottle (It Yells)', 'Invisible Headphones',
+            'Self-Driving Sofa', 'Quantum Diet Pills', 'NFT Socks', 'Subscription-Based Air',
+            'Blockchain Toothpaste', 'VR Lawn Mower', 'WiFi-Enabled Spoon', 'Cloud Storage for Thoughts',
+            'Organic Electricity', 'Portable Black Hole', 'AI Girlfriend (Beta)', 'Anti-Gravity Shoes',
+            'Smart Mirror That Roasts You', 'Cryptocurrency Pet Rock', 'Teleportation Subscription',
+            'Holographic Tacos', 'Time-Travel Insurance', 'Sentient Fridge', 'Neuralink Hair Dryer'
+        ];
+        const descriptions = [
+            'Revolutionary technology you definitely need. Our engineers made it up last Tuesday.',
+            '99.9% of users reported feeling something. The other 0.1% are liars.',
+            'As seen on absolutely no reputable news outlet. Featured in your dreams.',
+            'Powered by imaginary algorithms. Results may vary based on your belief system.',
+            'The future is here, and it is mildly disappointing but very expensive.',
+            'Scientists hate this one weird trick. Actually, scientists have never heard of it.',
+            'Sustainably sourced from pure marketing hype. Zero calories, zero substance.',
+            'Join 3 satisfied customers (we asked 10,000).',
+            'Breakthrough innovation in the field of taking your money.',
+            'Why think when you can consume? Limited stock of unlimited digital copies.'
+        ];
+        const ctas = ['Buy Now', 'Learn More', 'Get Started', 'Claim Offer', 'Join Waitlist', 'Pre-Order', 'Subscribe', 'Invest Now'];
 
-    function pseudoDecrypt(encryptedText) {
-        let clean = encryptedText.replace("ENC_", "");
-        return atob(clean).split('').reverse().join('');
-    }
+        const imageKeywords = ['technology', 'futuristic', 'abstract', 'neon', 'city', 'space', 'minimal', 'gradient', 'cyberpunk', 'product'];
 
-    // IP Check on Load
-    document.addEventListener("DOMContentLoaded", () => {
-        const ipDisplay = document.getElementById("user-ip");
-        const badge = document.getElementById("access-badge");
-        const uploadCard = document.getElementById("upload-card");
+        let adCount = 0;
+        let scrollDistance = 0;
+        let startTime = Date.now();
+        let loading = false;
 
-        ipDisplay.textContent = CURRENT_IP;
+        function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+        function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
-        if (CURRENT_IP !== ALLOWED_IP) {
-            badge.textContent = "DENIED (403)";
-            badge.style.backgroundColor = "#c62828";
-            uploadCard.innerHTML = `
-                <h2 style="color: #c62828;">Upload Access Restricted</h2>
-                <p>Your IP address (<code>${CURRENT_IP}</code>) is not authorized to submit new historical entries.</p>
+        function generateImageUrl(seed) {
+            const keyword = random(imageKeywords);
+            return `https://images.unsplash.com/photo-${seed}?w=600&h=400&fit=crop`;
+        }
+
+        // Predefined Unsplash photo IDs for reliability
+        const unsplashIds = [
+            '1518770660439-4636190af475', '1550751827-4bd374c3f58b', '1519389950476-29a8e752cc80',
+            '1526374965328-7f61d4dc18c5', '1558618666-fcd25c85f82e', '1451187580459-43490279c0fa',
+            '1510915228340-01ae5e77c990', '1504384308090-c54be3852f33', '1550745165-9bc0b252726f',
+            '1531297484001-80022131f5a1', '1525547719571-a2d4ac8945e2', '1519389950476-29a8e752cc80',
+            '1451187580459-43490279c0fa', '1504639725590-34d0e2e99ebd', '1485827404703-89b55fcc595e',
+            '1526374965328-7f61d4dc18c5', '1550751827-4bd374c3f58b', '1518770660439-4636190af475'
+        ];
+
+        function createAdCard() {
+            const types = ['normal', 'normal', 'normal', 'banner', 'square'];
+            const type = random(types);
+            const brand = random(brands);
+            const product = random(products);
+            const desc = random(descriptions);
+            const cta = random(ctas);
+            const imgId = unsplashIds[adCount % unsplashIds.length];
+            const imgUrl = `https://images.unsplash.com/photo-${imgId}?w=800&h=600&fit=crop`;
+
+            const card = document.createElement('div');
+            card.className = `ad-card ad-${type}`;
+            card.innerHTML = `
+                <span class="ad-label">Sponsored</span>
+                <img class="ad-image" src="${imgUrl}" alt="${product}" loading="lazy">
+                <div class="ad-content">
+                    <div class="ad-brand">${brand}</div>
+                    <h3 class="ad-title">${product}</h3>
+                    <p class="ad-desc">${desc}</p>
+                    <a href="#" class="ad-cta" onclick="event.preventDefault()">${cta} →</a>
+                </div>
             `;
+
+            // Ripple effect on click
+            card.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+
+            return card;
         }
-    });
 
-    // Handle Form Submission
-    document.getElementById("history-form").addEventListener("submit", function(e) {
-        e.preventDefault();
+        function loadAds(count = 12) {
+            if (loading) return;
+            loading = true;
 
-        const title = document.getElementById("title").value;
-        const content = document.getElementById("content").value;
+            const feed = document.getElementById('ad-feed');
+            const loader = document.getElementById('loader');
 
-        // Encrypt content before storing/displaying
-        const encryptedData = pseudoEncrypt(content);
+            setTimeout(() => {
+                for (let i = 0; i < count; i++) {
+                    const ad = createAdCard();
+                    feed.insertBefore(ad, loader);
+                    adCount++;
 
-        // Append new record to archives
-        const container = document.getElementById("archives-container");
-        const newCard = document.createElement("div");
-        newCard.className = "card";
-        newCard.innerHTML = `
-            <h2>${title}</h2>
-            <p class="decrypted-text">${content}</p>
-            <button class="toggle-btn" onclick="toggleView(this)">Show Encrypted Raw Data</button>
-            <div class="encrypted-raw">Encrypted Blob: [${encryptedData}]</div>
-        `;
+                    // Staggered animation
+                    setTimeout(() => ad.classList.add('visible'), i * 80);
+                }
 
-        container.prepend(newCard);
-
-        // Reset form
-        this.reset();
-    });
-
-    // Toggle Raw Encrypted View
-    function toggleView(btn) {
-        const rawBox = btn.nextElementSibling;
-        if (rawBox.style.display === "block") {
-            rawBox.style.display = "none";
-            btn.textContent = "Show Encrypted Raw Data";
-        } else {
-            rawBox.style.display = "block";
-            btn.textContent = "Hide Encrypted Raw Data";
+                document.getElementById('ad-count').textContent = adCount.toLocaleString();
+                loading = false;
+            }, 600);
         }
-    }
-</script>
 
+        // Infinite scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadAds(9);
+                }
+            });
+        }, { rootMargin: '200px' });
+
+        // Scroll tracking
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const current = window.scrollY;
+            scrollDistance += Math.abs(current - lastScroll);
+            lastScroll = current;
+
+            document.getElementById('scroll-depth').textContent = (scrollDistance / 1000).toFixed(1) + 'm';
+
+            // Show sticky ad after scrolling a bit
+            if (current > 800) {
+                document.getElementById('sticky-ad').classList.add('show');
+            }
+        });
+
+        // Time tracking
+        setInterval(() => {
+            const seconds = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('time-spent').textContent = seconds + 's';
+        }, 1000);
+
+        // Floating particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            const size = Math.random() * 6 + 2;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.background = ['var(--accent)', 'var(--accent-2)', 'var(--accent-3)'][Math.floor(Math.random()*3)];
+            particle.style.borderRadius = '50%';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            document.body.appendChild(particle);
+
+            setTimeout(() => particle.remove(), 20000);
+        }
+
+        setInterval(createParticle, 800);
+
+        // Initialize
+        observer.observe(document.getElementById('loader'));
+        loadAds(12);
+
+        // Parallax effect on hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            document.querySelector('.hero').style.transform = `translateY(${scrolled * 0.3}px)`;
+            document.querySelector('.hero').style.opacity = 1 - (scrolled / 600);
+        });
+    </script>
 </body>
 </html>
